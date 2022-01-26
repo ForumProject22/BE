@@ -2,12 +2,14 @@
   "name": "be",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "build/app.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
+    "dev": "npx concurrently \"tsc -w\" \"nodemon\"",
+    "build": "tsc",
+    "watch": "tsc -w",
     "test": "echo \"Error: no test specified",
     "lint": "eslint . --ext .ts",
-    "prepare": "husky install"
+    "type-check": "tsc --project tsconfig.json --pretty"
   },
   "repository": {
     "type": "git",
