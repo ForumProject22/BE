@@ -1,0 +1,60 @@
+{
+  "name": "be",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
+    "test": "echo \"Error: no test specified",
+    "lint": "eslint . --ext .ts",
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ForumProject22/BE.git"
+  },
+  "keywords": [],
+  "author": "Michael Rockingham",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ForumProject22/BE/issues"
+  },
+  "homepage": "https://github.com/ForumProject22/BE#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^14.3.2",
+    "express": "^4.17.2",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.1.8",
+    "morgan": "^1.10.0",
+    "nodemailer": "^6.7.2",
+    "prettier": "^2.5.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/body-parser": "^1.19.2",
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/jsonwebtoken": "^8.5.8",
+    "@types/mongoose": "^5.11.97",
+    "@types/morgan": "^1.9.3",
+    "@types/nanoid": "^3.0.0",
+    "@types/node": "^17.0.12",
+    "@types/nodemailer": "^6.4.4",
+    "@types/prettier": "^2.4.3",
+    "@typescript-eslint/eslint-plugin": "^5.10.1",
+    "@typescript-eslint/parser": "^5.10.1",
+    "eslint": "^8.2.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-import-resolver-typescript": "^2.5.0",
+    "eslint-plugin-import": "^2.25.2",
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.5.5"
+  },
+  "lint-staged": {
+    "**/*.{js,ts}": [
+      "npx prettier --write",
+      "npx eslint --fix --ext .js,.ts"
+    ]
+  }
+}
