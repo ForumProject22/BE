@@ -12,6 +12,7 @@ dotenv_1.default.config();
 (0, db_1.default)();
 //middleware
 const port = process.env.PORT;
+console.log(port);
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 (0, morgan_1.default)("common");
