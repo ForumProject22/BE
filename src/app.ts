@@ -10,7 +10,6 @@ connectDB()
 
 //middleware
 const port = process.env.PORT
-console.log(port)
 const app = express();
 app.use(express.json())
 morgan("common")
