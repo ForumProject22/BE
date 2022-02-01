@@ -35,7 +35,7 @@ const usersSchema = new mongoose_1.Schema({
     },
     verifiedPass: {
         type: Boolean,
-        default: true
+        default: false
     },
     password: {
         type: String,

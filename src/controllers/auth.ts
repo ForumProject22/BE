@@ -2,8 +2,22 @@ import Users from "../models/usersModel";
 import { Request, Response } from "express";
 import generateToken from "../utils/generateToken";
 import Jwt from "jsonwebtoken";
+import nodemailer from "nodemailer"
 
+export const transporter = nodemailer.createTransport({
+    "host": "smtp.gmail.com",
+    "port": 587,
+    secure: false,
+    auth: {
 
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASS,
+
+    },
+    tls: {
+        rejectUnauthorized: false
+    }
+});
 
 //Register
 

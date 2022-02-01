@@ -29,7 +29,7 @@ const usersSchema = new Schema<Users>({
     },
     verifiedPass: {
         type: Boolean,
-        default: true
+        default: false
     },
     password: {
         type: String,
