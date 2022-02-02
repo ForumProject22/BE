@@ -81,7 +81,8 @@ const usersSchema = new mongoose_1.Schema({
                 required: false,
             },
         }],
-});
+}, { timestamps: true, _id: true });
+usersSchema.index({ createdAt: 1 }, { expires: '24h', partialFilterExpression: { verifiedPass: false } });
 usersSchema.methods.matchPassword = function (enteredPassword) {
     return __awaiter(this, void 0, void 0, function* () {
         const user = this;

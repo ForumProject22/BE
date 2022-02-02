@@ -76,10 +76,9 @@ const usersSchema = new Schema<Users>({
             required: false,
         },
     }],
+}, { timestamps: true, _id: true })
 
-
-
-})
+usersSchema.index({ createdAt: 1 }, { expires: '24h', partialFilterExpression: { verifiedPass: false } })
 
 usersSchema.methods.matchPassword = async function (enteredPassword: string): Promise<boolean> {
     const user = this as unknown as Users
