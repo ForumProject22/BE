@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "npx concurrently \"tsc -w\" \"nodemon\"",
     "build": "tsc",
-    "start": "nodemon build/app.js",
+    "server": "nodemon ts-node index.ts",
+    "start": "node build/app.js",
     "watch": "tsc -w",
     "test": "echo \"Error: no test specified",
     "lint": "eslint . --ext .ts",
