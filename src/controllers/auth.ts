@@ -57,6 +57,7 @@ export const registerUser = async (req: Request, res: Response) => {
             password
         })
 
+        //await user.save()
 
         return res.send({ userDataSaved: user })
     } catch (error: any) {

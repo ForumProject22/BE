@@ -58,6 +58,7 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             email,
             password
         });
+        //await user.save()
         return res.send({ userDataSaved: user });
     }
     catch (error) {
