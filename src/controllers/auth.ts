@@ -117,12 +117,14 @@ export const verifyUser = async (req: Request, res: Response) => {
     try {
         payload = Jwt.verify(
             token,
-            verifyToken
+            verifyToken,
+
         );
         console.log("thepayload",)
     } catch (err) {
         return res.status(500).send({ message: "invalid token" })
     }
+
 
     // find user with mating email
 
