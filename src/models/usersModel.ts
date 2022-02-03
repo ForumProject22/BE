@@ -37,7 +37,8 @@ const usersSchema = new Schema<Users>({
     },
     roles: {
         type: Number,
-        required: false,
+        default: 3,
+        required: true,
     },
     avatar: {
         type: String,
@@ -98,7 +99,7 @@ usersSchema.methods.generateVerificationToken = function () {
 
 usersSchema.pre("save", async function (next) {
     let user = this as unknown as UsersDocument
-    console.log("model user", this)
+
     if (!user.isModified("password")) {
         next()
     }

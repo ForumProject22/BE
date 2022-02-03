@@ -3,7 +3,7 @@ interface Users {
     lastName: string;
     displayName: string;
     dob: string;
-    role: [];
+    role: number;
     email: string;
     verified: boolean;
     verifiedPass: boolean;
@@ -35,3 +35,5 @@ interface jwtTypes {
     exp: number;
 
 }
+
+

@@ -12,40 +12,40 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyUser = exports.registerUser = exports.getUserProfile = void 0;
+exports.login = exports.verifyUser = exports.registerUser = exports.getUserProfileById = exports.getUserProfiles = void 0;
 const usersModel_1 = __importDefault(require("../models/usersModel"));
 const generateToken_1 = __importDefault(require("../utils/generateToken"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
-// export const transporter = nodemailer.createTransport({
-//     "host": "smtp.gmail.com",
-//     "port": 587,
-//     secure: false,
-//     auth: {
-//         user: process.env.EMAIL,
-//         pass: process.env.EMAIL_PASS,
-//     },
-//     tls: {
-//         rejectUnauthorized: false
-//     }
-// });
-//Register
-const getUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
+// find all users
+const getUserProfiles = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // find all users
     const user = yield usersModel_1.default.find();
-    console.log(user);
-    if (user) {
+    if (user && user[0].roles === 3) {
         res.status(200).json(user);
     }
     else {
-        res.status(401);
-        throw new Error('User not found');
+        res.status(401).send("Access Denied");
     }
 });
-exports.getUserProfile = getUserProfile;
+exports.getUserProfiles = getUserProfiles;
+//find one user By Id
+const getUserProfileById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.params.id;
+        //find one user
+        const user = yield usersModel_1.default.findById(id);
+        res.send(user);
+    }
+    catch (error) {
+        res.send("could not find user");
+    }
+});
+exports.getUserProfileById = getUserProfileById;
 //Next step set up auth and mailer
 const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { firstName, lastName, email, password } = req.body;
-    console.log("req body", req.body);
     const transporter = nodemailer_1.default.createTransport({
         host: "smtp.gmail.com",
         port: 587,
@@ -70,15 +70,16 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             firstName,
             lastName,
             email,
+            role: 3,
             password
         });
         yield user.save();
         const savedUser = yield usersModel_1.default.findOne({ email: email });
-        console.log("the saved user", savedUser);
         // Generate VerificationToken
         const verificationToken = (0, generateToken_1.default)(email);
         // Create and Email user a unique verification Link
-        const url = `${process.env.ROOT_Domain}fd/users/verify/${verificationToken}`;
+        const url = `${process.env.NODE_ENV === "production" ?
+            process.env.ROOT_Domain : process.env.local}fd/users/verify/${verificationToken}`;
         transporter.sendMail({
             to: email,
             subject: 'Verify Account',
@@ -89,7 +90,6 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         });
     }
     catch (error) {
-        console.log(error);
         return res.status(500).send(error);
     }
 });
@@ -97,7 +97,6 @@ exports.registerUser = registerUser;
 // Verify User
 const verifyUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { token } = req.params;
-    console.log("thetoken", token);
     //Get secret to decode token
     const verifyToken = process.env.JWT_Secret || "";
     //Check if we have a token
@@ -108,13 +107,46 @@ const verifyUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     let payload = null;
     try {
         payload = jsonwebtoken_1.default.verify(token, verifyToken);
-        console.log("thepayload", payload.email);
     }
     catch (err) {
         return res.status(500).send({ message: "invalid token" });
     }
-    // find user with mating email
-    const user = yield usersModel_1.default.findOne({ email: payload.email });
-    // console.log("theuser", user)
+    try {
+        // find user with matching email
+        const user = yield usersModel_1.default.findOne({ email: payload.email });
+        //send no userForm located in views "noUser"
+        if (!user) {
+            return res.render("noUser", { title: "cityFourms" });
+        }
+        user.verifiedPass = true;
+        yield user.save();
+        return res.render("verified", { title: "cityFourms" });
+    }
+    catch (err) {
+        return res.status(500).send(err);
+    }
 });
 exports.verifyUser = verifyUser;
+// Login 
+const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { email, password } = req.body;
+        const user = yield usersModel_1.default.findOne({ email: email });
+        if (!user)
+            return res.status(400).send("invalid email or password");
+        // checks if account has been verifed
+        if (user.verifiedPass === false)
+            return res.status(400).send("Account not verified");
+        //comapre password with hash
+        const validPassword = yield bcryptjs_1.default.compare(password, user.password);
+        if (!validPassword)
+            return res.status(400).send("Invalid email or password");
+        //send token to client to be userd in headers for logoin and auth routes
+        const token = (0, generateToken_1.default)(email);
+        res.send(token);
+    }
+    catch (error) {
+        res.status(500).send("An error occured");
+    }
+});
+exports.login = login;

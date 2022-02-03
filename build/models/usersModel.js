@@ -43,7 +43,8 @@ const usersSchema = new mongoose_1.Schema({
     },
     roles: {
         type: Number,
-        required: false,
+        default: 3,
+        required: true,
     },
     avatar: {
         type: String,
@@ -98,7 +99,6 @@ usersSchema.methods.generateVerificationToken = function () {
 usersSchema.pre("save", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         let user = this;
-        console.log("model user", this);
         if (!user.isModified("password")) {
             next();
         }
