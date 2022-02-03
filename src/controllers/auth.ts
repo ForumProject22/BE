@@ -5,6 +5,8 @@ import Jwt from "jsonwebtoken";
 import nodemailer from "nodemailer"
 
 
+
+
 // export const transporter = nodemailer.createTransport({
 //     "host": "smtp.gmail.com",
 //     "port": 587,
@@ -120,7 +122,7 @@ export const verifyUser = async (req: Request, res: Response) => {
             verifyToken,
 
         );
-        console.log("thepayload",)
+        console.log("thepayload", (payload as jwtTypes).email)
     } catch (err) {
         return res.status(500).send({ message: "invalid token" })
     }
@@ -128,8 +130,8 @@ export const verifyUser = async (req: Request, res: Response) => {
 
     // find user with mating email
 
-    const user = await Users.findOne({ email: payload.email })
-    console.log("theuser", user)
+    const user = await Users.findOne({ email: (payload as jwtTypes).email })
+    // console.log("theuser", user)
 }
 
 

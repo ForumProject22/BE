@@ -108,13 +108,13 @@ const verifyUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     let payload = null;
     try {
         payload = jsonwebtoken_1.default.verify(token, verifyToken);
-        console.log("thepayload");
+        console.log("thepayload", payload.email);
     }
     catch (err) {
         return res.status(500).send({ message: "invalid token" });
     }
     // find user with mating email
     const user = yield usersModel_1.default.findOne({ email: payload.email });
-    console.log("theuser", user);
+    // console.log("theuser", user)
 });
 exports.verifyUser = verifyUser;
