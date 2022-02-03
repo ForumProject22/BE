@@ -27,3 +27,11 @@ interface Users {
 
     matchPassword(enteredPassword: string): Promise<Boolean>
 }
+
+interface jwtTypes {
+
+    email: string;
+    iat: number;
+    exp: number;
+
+}

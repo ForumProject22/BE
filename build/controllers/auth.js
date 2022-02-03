@@ -12,8 +12,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerUser = exports.getUserProfile = void 0;
+exports.verifyUser = exports.registerUser = exports.getUserProfile = void 0;
 const usersModel_1 = __importDefault(require("../models/usersModel"));
+const generateToken_1 = __importDefault(require("../utils/generateToken"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const nodemailer_1 = __importDefault(require("nodemailer"));
+// export const transporter = nodemailer.createTransport({
+//     "host": "smtp.gmail.com",
+//     "port": 587,
+//     secure: false,
+//     auth: {
+//         user: process.env.EMAIL,
+//         pass: process.env.EMAIL_PASS,
+//     },
+//     tls: {
+//         rejectUnauthorized: false
+//     }
+// });
 //Register
 const getUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield usersModel_1.default.find();
@@ -31,6 +46,18 @@ exports.getUserProfile = getUserProfile;
 const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { firstName, lastName, email, password } = req.body;
     console.log("req body", req.body);
+    const transporter = nodemailer_1.default.createTransport({
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false,
+        auth: {
+            user: process.env.EMAIL,
+            pass: process.env.EMAIL_PASS,
+        },
+        tls: {
+            rejectUnauthorized: false
+        }
+    });
     try {
         // Check if the email is in use
         const userExists = yield usersModel_1.default.findOne({ email });
@@ -45,10 +72,49 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             email,
             password
         });
-        return res.send({ userDataSaved: user });
+        yield user.save();
+        const savedUser = yield usersModel_1.default.findOne({ email: email });
+        console.log("the saved user", savedUser);
+        // Generate VerificationToken
+        const verificationToken = (0, generateToken_1.default)(email);
+        // Create and Email user a unique verification Link
+        const url = `${process.env.ROOT_Domain}fd/users/verify/${verificationToken}`;
+        transporter.sendMail({
+            to: email,
+            subject: 'Verify Account',
+            html: `Click <a href = '${url}'>here</a> to confirm your email.`
+        });
+        return res.status(201).send({
+            message: `${firstName} ${lastName}, We, sent a verification email to ${email} `
+        });
     }
     catch (error) {
-        return res.status(500).send(error.message);
+        console.log(error);
+        return res.status(500).send(error);
     }
 });
 exports.registerUser = registerUser;
+// Verify User
+const verifyUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { token } = req.params;
+    console.log("thetoken", token);
+    //Get secret to decode token
+    const verifyToken = process.env.JWT_Secret || "";
+    //Check if we have a token
+    if (!token) {
+        return res.status(422).send({ message: "Missing Token" });
+    }
+    //If we have a token Verify it from the url
+    let payload = null;
+    try {
+        payload = jsonwebtoken_1.default.verify(token, verifyToken);
+        console.log("thepayload", payload.email);
+    }
+    catch (err) {
+        return res.status(500).send({ message: "invalid token" });
+    }
+    // find user with mating email
+    const user = yield usersModel_1.default.findOne({ email: payload.email });
+    // console.log("theuser", user)
+});
+exports.verifyUser = verifyUser;
