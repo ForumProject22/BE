@@ -4,7 +4,7 @@ import morgan from "morgan"
 import dotenv from "dotenv"
 import routes from "./routes"
 const exGraphql = require('express-graphql')
-const schema = require('./schema/schema.js')
+const GraphQLSchema = require('./schema/schema.js')
 
 
 dotenv.config();
@@ -29,7 +29,7 @@ app.use("/fd", routes)
 app.use(
     '/graphql',
     exGraphql({
-      schema: schema,
+      schema: GraphQLSchema,
       graphiql: true,
       pretty: true
     })

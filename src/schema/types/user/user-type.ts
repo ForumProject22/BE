@@ -1,17 +1,13 @@
-import {
-    GraphQLList,
+const {
     GraphQLString,
     GraphQLBoolean,
     GraphQLInt,
     GraphQLObjectType,
-    GraphQLNonNull
-    } from 'graphql';
+    } = require('graphql');
 
 const UserType = new GraphQLObjectType({
     name: 'User',
     description: 'User Type Definition',
-    exclude: ['__v'],
-    class: 'GraphQLObjectType',
     fields: () => ({
         _id: {
             type: GraphQLString
