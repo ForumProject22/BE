@@ -3,6 +3,8 @@ import connectDB from "./config/db"
 import morgan from "morgan"
 import dotenv from "dotenv"
 import routes from "./routes"
+const exGraphql = require('express-graphql')
+const schema = require('./schema/schema.js')
 
 
 dotenv.config();
@@ -17,10 +19,22 @@ morgan("common")
 
 //Routes
 
-app.use("/fd", routes)
 app.get('/', (req, res) => {
     res.status(200).json({ api: 'UP' });
 })
+
+app.use("/fd", routes)
+
+// graphQL
+app.use(
+    '/graphql',
+    exGraphql({
+      schema: schema,
+      graphiql: true,
+      pretty: true
+    })
+)
+
 app.listen(port, () => {
     console.log(`app is running on port ${port}`)
 })

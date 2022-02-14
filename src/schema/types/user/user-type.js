@@ -10,6 +10,8 @@ import {
 const UserType = new GraphQLObjectType({
     name: 'User',
     description: 'User Type Definition',
+    exclude: ['__v'],
+    class: 'GraphQLObjectType',
     fields: () => ({
         _id: {
             type: GraphQLString

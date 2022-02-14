@@ -1,15 +1,25 @@
 import {
     GraphQLSchema,
     GraphQLObjectType,
+    GraphQLList,
   } from 'graphql';
-import UserQuery from './user/userQuery';
+import UserType from './types/user/user-type';
+import Users from "../models/usersModel";
+
 
 
 const RootQueryType = new GraphQLSchema({
     query: new GraphQLObjectType({
       name: 'Query',
       fields: () => ({
-        ...UserQuery,
+        users: {
+          type: GraphQLList(UserType),
+          description: 'Get list of all users',
+          resolve: () => {
+            let users = await Users.find().exec()
+            return users;
+          }
+        }
       }),
     })
   });
