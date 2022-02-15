@@ -83,7 +83,7 @@ const usersSchema = new mongoose_1.Schema({
             },
         }],
 }, { timestamps: true, _id: true });
-usersSchema.index({ createdAt: 1 }, { expires: '24h', partialFilterExpression: { verifiedPass: false } });
+usersSchema.index({ createdAt: 1 }, { expires: "24h", partialFilterExpression: { verifiedPass: false } });
 usersSchema.methods.matchPassword = function (enteredPassword) {
     return __awaiter(this, void 0, void 0, function* () {
         const user = this;
@@ -91,9 +91,11 @@ usersSchema.methods.matchPassword = function (enteredPassword) {
     });
 };
 usersSchema.methods.generateVerificationToken = function () {
-    const token = process.env.USER_VERIFICATION_TOKEN_SECRET || '';
+    const token = process.env.USER_VERIFICATION_TOKEN_SECRET || "";
     const user = this;
-    const verificationToken = jsonwebtoken_1.default.sign({ ID: user._id }, token, { expiresIn: "7d" });
+    const verificationToken = jsonwebtoken_1.default.sign({ ID: user._id }, token, {
+        expiresIn: "7d",
+    });
     return verificationToken;
 };
 usersSchema.pre("save", function (next) {
@@ -106,5 +108,5 @@ usersSchema.pre("save", function (next) {
         user.password = yield bcryptjs_1.default.hash(user.password, salt);
     });
 });
-const Users = (0, mongoose_1.model)('users', usersSchema);
+const Users = (0, mongoose_1.model)("users", usersSchema);
 exports.default = Users;

@@ -1,13 +1,10 @@
-import { Document, Schema, model, connect } from 'mongoose';
-import bcrypt from "bcryptjs"
-import jwt from "jsonwebtoken"
-
-
+import { Document, Schema, model, connect } from "mongoose";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 interface UsersDocument extends Users, Document {
-    matchPassword(enteredPassword: string): Promise<Boolean>
+  matchPassword(enteredPassword: string): Promise<Boolean>;
 }
-
 
 const usersSchema = new Schema<Users>({
     firstName: {
@@ -79,36 +76,39 @@ const usersSchema = new Schema<Users>({
     }],
 }, { timestamps: true, _id: true })
 
-usersSchema.index({ createdAt: 1 }, { expires: '24h', partialFilterExpression: { verifiedPass: false } })
+usersSchema.index(
+  { createdAt: 1 },
+  { expires: "24h", partialFilterExpression: { verifiedPass: false } }
+);
 
-usersSchema.methods.matchPassword = async function (enteredPassword: string): Promise<boolean> {
-    const user = this as unknown as Users
-    return await bcrypt.compare(enteredPassword, user.password)
-}
+usersSchema.methods.matchPassword = async function (
+  enteredPassword: string
+): Promise<boolean> {
+  const user = this as unknown as Users;
+  return await bcrypt.compare(enteredPassword, user.password);
+};
 
 usersSchema.methods.generateVerificationToken = function () {
-    const token = process.env.USER_VERIFICATION_TOKEN_SECRET || '';
-    const user = this;
-    const verificationToken = jwt.sign(
-        { ID: user._id },
-        token,
-        { expiresIn: "7d" }
-    )
-    return verificationToken
+  const token = process.env.USER_VERIFICATION_TOKEN_SECRET || "";
+  const user = this;
+  const verificationToken = jwt.sign({ ID: user._id }, token, {
+    expiresIn: "7d",
+  });
+  return verificationToken;
 };
 
 usersSchema.pre("save", async function (next) {
-    let user = this as unknown as UsersDocument
+  let user = this as unknown as UsersDocument;
 
-    if (!user.isModified("password")) {
-        next()
-    }
+  if (!user.isModified("password")) {
+    next();
+  }
 
-    const salt = await bcrypt.genSalt(10)
+  const salt = await bcrypt.genSalt(10);
 
-    user.password = await bcrypt.hash(user.password, salt)
-})
+  user.password = await bcrypt.hash(user.password, salt);
+});
 
-const Users = model<Users>('users', usersSchema)
+const Users = model<Users>("users", usersSchema);
 
 export default Users;
