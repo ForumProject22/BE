@@ -10,6 +10,7 @@ const router = express_1.default.Router();
 router.post("/", auth_1.registerUser);
 router.post("/login", auth_1.login);
 router.get("/", auth_2.authorization, auth_1.getUserProfiles);
+router.get("/admin/get/allusers", auth_1.getAllUsers);
 router.get("/profile/:id", auth_2.authorization, auth_1.getUserProfileById);
 router.get("/verify/:token", auth_1.verifyUser);
 exports.default = router;

@@ -12,12 +12,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = exports.verifyUser = exports.registerUser = exports.getUserProfileById = exports.getUserProfiles = void 0;
+exports.login = exports.verifyUser = exports.registerUser = exports.getUserProfileById = exports.getUserProfiles = exports.getAllUsers = void 0;
 const usersModel_1 = __importDefault(require("../models/usersModel"));
 const generateToken_1 = __importDefault(require("../utils/generateToken"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+//get all users
+const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield usersModel_1.default.find();
+    res.status(200).json(user);
+});
+exports.getAllUsers = getAllUsers;
 // find all users
 const getUserProfiles = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // find all users

@@ -5,10 +5,11 @@ import Jwt from "jsonwebtoken";
 import nodemailer from "nodemailer"
 import bcrypt from "bcryptjs"
 
-
-
-
-
+//get all users
+export const getAllUsers = async (req: Request, res: Response) => {
+    const user = await Users.find()
+    res.status(200).json(user)
+}
 
 // find all users
 export const getUserProfiles = async (req: Request, res: Response) => {
@@ -36,7 +37,9 @@ export const getUserProfileById = async (req: Request, res: Response) => {
 
         res.send("could not find user")
     }
+
 }
+
 
 //Next step set up auth and mailer
 export const registerUser = async (req: Request, res: Response) => {
