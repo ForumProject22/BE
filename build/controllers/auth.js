@@ -28,7 +28,7 @@ exports.getAllUsers = getAllUsers;
 const getUserProfiles = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // find all users
     const user = yield usersModel_1.default.find();
-    if (user && user[0].roles === 3) {
+    if (user && user[0].role === 3) {
         res.status(200).json(user);
     }
     else {
