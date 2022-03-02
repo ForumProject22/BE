@@ -16,7 +16,7 @@ export const getUserProfiles = async (req: Request, res: Response) => {
     // find all users
     const user = await Users.find()
 
-    if (user && user[0].roles === 3) {
+    if (user && user[0].role === 3) {
         res.status(200).json(user)
 
     } else {

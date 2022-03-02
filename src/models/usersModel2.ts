@@ -4,12 +4,12 @@ import jwt from "jsonwebtoken"
 
 
 
-interface UsersDocument extends Users, Document {
+interface UsersDocument extends Users2, Document {
     matchPassword(enteredPassword: string): Promise<Boolean>
 }
 
 
-const usersSchema = new Schema<Users>({
+const usersSchema = new Schema<Users2>({
     firstName: {
         type: String,
         required: true,
@@ -23,7 +23,10 @@ const usersSchema = new Schema<Users>({
         required: true,
         unique: true,
     },
-
+    verified: {
+        type: Boolean,
+        default: false
+    },
     verifiedPass: {
         type: Boolean,
         default: false
@@ -32,18 +35,54 @@ const usersSchema = new Schema<Users>({
         type: String,
         required: true,
     },
-    role: {
+    roles: {
         type: Number,
         default: 3,
         required: true,
     },
+    avatar: {
+        type: String,
+        required: false,
+    },
+    followers: {
+        type: [],
+        default: [],
+        required: false,
+    },
+    followings: {
+        type: [],
+        default: [],
+        required: false,
+    },
+    city: {
+        type: String,
+        required: false,
+    },
+    state: {
+        type: String,
+        required: false,
+    },
+    socialMedia: [{
 
+        twitter: {
+            type: String,
+            required: false,
+        },
+        facebook: {
+            type: String,
+            required: false,
+        },
+        instagram: {
+            type: String,
+            required: false,
+        },
+    }],
 }, { timestamps: true, _id: true })
 
 usersSchema.index({ createdAt: 1 }, { expires: '24h', partialFilterExpression: { verifiedPass: false } })
 
 usersSchema.methods.matchPassword = async function (enteredPassword: string): Promise<boolean> {
-    const user = this as unknown as Users
+    const user = this as unknown as Users2
     return await bcrypt.compare(enteredPassword, user.password)
 }
 
@@ -70,6 +109,6 @@ usersSchema.pre("save", async function (next) {
     user.password = await bcrypt.hash(user.password, salt)
 })
 
-const Users = model<Users>('users', usersSchema)
+const Users = model<Users2>('users', usersSchema)
 
 export default Users;

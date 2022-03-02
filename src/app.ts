@@ -5,6 +5,7 @@ import dotenv from "dotenv"
 import routes from "./routes"
 
 
+
 dotenv.config();
 connectDB()
 
@@ -17,10 +18,13 @@ morgan("common")
 
 //Routes
 
-app.use("/fd", routes)
 app.get('/', (req, res) => {
     res.status(200).json({ api: 'UP' });
 })
+
+app.use("/fd", routes)
+
+
 app.listen(port, () => {
     console.log(`app is running on port ${port}`)
 })
