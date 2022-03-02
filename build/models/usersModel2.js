@@ -29,6 +29,10 @@ const usersSchema = new mongoose_1.Schema({
         required: true,
         unique: true,
     },
+    verified: {
+        type: Boolean,
+        default: false
+    },
     verifiedPass: {
         type: Boolean,
         default: false
@@ -37,11 +41,47 @@ const usersSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
-    role: {
+    roles: {
         type: Number,
         default: 3,
         required: true,
     },
+    avatar: {
+        type: String,
+        required: false,
+    },
+    followers: {
+        type: [],
+        default: [],
+        required: false,
+    },
+    followings: {
+        type: [],
+        default: [],
+        required: false,
+    },
+    city: {
+        type: String,
+        required: false,
+    },
+    state: {
+        type: String,
+        required: false,
+    },
+    socialMedia: [{
+            twitter: {
+                type: String,
+                required: false,
+            },
+            facebook: {
+                type: String,
+                required: false,
+            },
+            instagram: {
+                type: String,
+                required: false,
+            },
+        }],
 }, { timestamps: true, _id: true });
 usersSchema.index({ createdAt: 1 }, { expires: '24h', partialFilterExpression: { verifiedPass: false } });
 usersSchema.methods.matchPassword = function (enteredPassword) {
