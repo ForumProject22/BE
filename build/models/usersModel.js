@@ -62,8 +62,8 @@ usersSchema.pre("save", function (next) {
         if (!user.isModified("password")) {
             next();
         }
-        const salt = yield bcryptjs_1.default.genSalt(10);
-        user.password = yield bcryptjs_1.default.hash(user.password, salt);
+        const saltRounds = 10;
+        user.password = yield bcryptjs_1.default.hashSync(user.password, saltRounds);
     });
 });
 const Users = (0, mongoose_1.model)('users', usersSchema);
