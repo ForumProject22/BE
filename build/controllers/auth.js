@@ -12,12 +12,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = exports.verifyUser = exports.registerUser = exports.getUserProfileById = exports.getUserProfiles = void 0;
+exports.login = exports.verifyUser = exports.registerUser = exports.getUserProfileById = exports.getUserProfiles = exports.getAllUsers = void 0;
 const usersModel_1 = __importDefault(require("../models/usersModel"));
 const generateToken_1 = __importDefault(require("../utils/generateToken"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+//get all users
+const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield usersModel_1.default.find();
+    res.status(200).json(user);
+});
+exports.getAllUsers = getAllUsers;
 // find all users
 const getUserProfiles = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // find all users
@@ -55,8 +61,8 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             pass: process.env.EMAIL_PASS,
         },
         tls: {
-            rejectUnauthorized: false
-        }
+            rejectUnauthorized: false,
+        },
     });
     try {
         // Check if the email is in use
@@ -71,22 +77,23 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             lastName,
             email,
             role: 3,
-            password
+            password,
         });
         yield user.save();
         const savedUser = yield usersModel_1.default.findOne({ email: email });
         // Generate VerificationToken
         const verificationToken = (0, generateToken_1.default)(email);
         // Create and Email user a unique verification Link
-        const url = `${process.env.NODE_ENV === "production" ?
-            process.env.ROOT_Domain : process.env.local}fd/users/verify/${verificationToken}`;
+        const url = `${process.env.NODE_ENV === "production"
+            ? process.env.ROOT_Domain
+            : process.env.local}fd/users/verify/${verificationToken}`;
         transporter.sendMail({
             to: email,
-            subject: 'Verify Account',
-            html: `Click <a href = '${url}'>here</a> to confirm your email.`
+            subject: "Verify Account",
+            html: `Click <a href = '${url}'>here</a> to confirm your email.`,
         });
         return res.status(201).send({
-            message: `${firstName} ${lastName}, We, sent a verification email to ${email} `
+            message: `${firstName} ${lastName}, We, sent a verification email to ${email} `,
         });
     }
     catch (error) {
@@ -127,26 +134,37 @@ const verifyUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.verifyUser = verifyUser;
-// Login 
+// Login
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password } = req.body;
         const user = yield usersModel_1.default.findOne({ email: email });
+        console.log("This is user:", user);
         if (!user)
-            return res.status(400).send("invalid email or password");
+            return res.status(400).send("invalid email or password***");
         // checks if account has been verifed
         if (user.verifiedPass === false)
             return res.status(400).send("Account not verified");
         //comapre password with hash
         const validPassword = yield bcryptjs_1.default.compare(password, user.password);
+        console.log("Is pass valid?", validPassword);
+        console.log("sent password: ", user.password);
+        console.log("saved password: ", password);
         if (!validPassword)
-            return res.status(400).send("Invalid email or password");
-        //send token to client to be userd in headers for logoin and auth routes
+            return res.status(400).send("Invalid email or password123");
+        //send token to client to be used in headers for login and auth routes
         const token = (0, generateToken_1.default)(email);
-        res.send(token);
+        const data = {
+            token: token,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+        };
+        res.send(data);
     }
     catch (error) {
-        res.status(500).send("An error occured");
+        console.log("This is an error:", error);
+        res.status(500).send(`This is an error: ${error}`);
     }
 });
 exports.login = login;

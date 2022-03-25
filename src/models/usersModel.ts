@@ -65,9 +65,9 @@ usersSchema.pre("save", async function (next) {
         next()
     }
 
-    const salt = await bcrypt.genSalt(10)
+    const saltRounds  = 10;
 
-    user.password = await bcrypt.hash(user.password, salt)
+    user.password = await bcrypt.hashSync(user.password, saltRounds)
 })
 
 const Users = model<Users>('users', usersSchema)

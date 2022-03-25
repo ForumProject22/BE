@@ -1,19 +1,13 @@
 interface Users {
     firstName: string;
     lastName: string;
-
-
     role: number;
     email: string;
-
     verifiedPass: boolean;
     password: string;
-
-
     timestamps: boolean;
-
-    matchPassword(enteredPassword: string): Promise<Boolean>
 }
+
 interface Users2 {
     firstName: string;
     lastName: string;
